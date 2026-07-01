@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Trilha 01 - Vue.js</title>
+  <!-- Vue 3 via CDN: forma mais simples de começar, sem precisar do Vue CLI -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <!-- Axios via CDN: usado para fazer as requisições HTTP -->
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 700px; margin: 40px auto; padding: 0 16px; }
+    section { margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid #ccc; }
+    h2 { color: #003c8f; }
+    input { display: block; margin: 6px 0; padding: 6px; width: 100%; box-sizing: border-box; }
+    button { margin-top: 8px; padding: 8px 16px; cursor: pointer; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #ccc; padding: 6px; text-align: left; }
+  </style>
+</head>
+<body>
+  <div id="app">
+
+    <!-- Exercício 3: consumir API pública com Axios e exibir no console -->
+    <section>
+      <h2>Exercício 3 — Posts (JSONPlaceholder)</h2>
+      <p>Abra o console do navegador (F12) para ver os posts carregados.</p>
+      <button @click="carregarPosts">Carregar posts no console</button>
+    </section>
+
+    <!-- Exercícios 5 e 7: listar, adicionar e remover usuários via API Node -->
+    <section>
+      <h2>Exercícios 5 e 7 — Lista de Usuários (API Node)</h2>
+      <table>
+        <thead>
+          <tr><th>ID</th><th>Nome</th><th>Email</th><th></th></tr>
+        </thead>
+        <tbody>
+          <tr v-for="usuario in usuarios" :key="usuario.id">
+            <td>{{ usuario.id }}</td>
+            <td>{{ usuario.nome }}</td>
+            <td>{{ usuario.email }}</td>
+            <td><button @click="removerUsuario(usuario.id)">Remover</button></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Adicionar usuário</h3>
+      <input v-model="novoUsuario.nome" placeholder="Nome">
+      <input v-model="novoUsuario.email" placeholder="Email">
+      <button @click="adicionarUsuario">Adicionar</button>
+    </section>
+
+    <!-- Exercício 9: formulário reativo de cadastro -->
+    <section>
+      <h2>Exercício 9 — Formulário de Cadastro</h2>
+      <input v-model="cadastro.nome" placeholder="Nome">
+      <input v-model="cadastro.email" placeholder="Email">
+      <input v-model="cadastro.telefone" placeholder="Telefone">
+      <button @click="enviarCadastro">Cadastrar</button>
+      <p v-if="cadastroEnviado">
+        Cadastrado: {{ cadastro.nome }} - {{ cadastro.email }} - {{ cadastro.telefone }}
+      </p>
+    </section>
+
+    <!-- Exercício 10: consumir API pública ViaCEP -->
+    <section>
+      <h2>Exercício 10 — Consulta de CEP (ViaCEP)</h2>
+      <input v-model="cep" placeholder="Digite o CEP (ex: 01001000)">
+      <button @click="buscarCep">Buscar</button>
+      <div v-if="endereco.logradouro">
+        <p><strong>Logradouro:</strong> {{ endereco.logradouro }}</p>
+        <p><strong>Bairro:</strong> {{ endereco.bairro }}</p>
+        <p><strong>Cidade:</strong> {{ endereco.localidade }}</p>
+        <p><strong>Estado:</strong> {{ endereco.uf }}</p>
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    const { createApp } = Vue;
+
+    createApp({
+      data() {
+        return {
+          // Exercícios 5 e 7
+          usuarios: [],
+          novoUsuario: { nome: '', email: '' },
+
+          // Exercício 9
+          cadastro: { nome: '', email: '', telefone: '' },
+          cadastroEnviado: false,
+
+          // Exercício 10
+          cep: '',
+          endereco: {}
+        };
+      },
+      methods: {
+        // Exercício 3
+        async carregarPosts() {
+          const resposta = await axios.get('https://jsonplaceholder.typicode.com/posts');
+          console.log(resposta.data);
+        },
+
+        // Exercícios 5 e 7
+        async carregarUsuarios() {
+          const resposta = await axios.get('http://localhost:3000/usuarios');
+          this.usuarios = resposta.data;
+        },
+        async adicionarUsuario() {
+          if (!this.novoUsuario.nome || !this.novoUsuario.email) return;
+          await axios.post('http://localhost:3000/usuarios', this.novoUsuario);
+          this.novoUsuario = { nome: '', email: '' };
+          this.carregarUsuarios();
+        },
+        async removerUsuario(id) {
+          await axios.delete(`http://localhost:3000/usuarios/${id}`);
+          this.carregarUsuarios();
+        },
+
+        // Exercício 9
+        enviarCadastro() {
+          this.cadastroEnviado = true;
+        },
+
+        // Exercício 10
+        async buscarCep() {
+          const resposta = await axios.get(`https://viacep.com.br/ws/${this.cep}/json/`);
+          this.endereco = resposta.data;
+        }
+      },
+      mounted() {
+        this.carregarUsuarios();
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>
