@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Trilha 02 - Conhecendo o Vue.js</title>
+  <!-- Vue 3 via CDN: mesmo link que você usaria no External Resources do jsFiddle (exercício 1) -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 700px; margin: 40px auto; padding: 0 16px; }
+    section { margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid #ccc; }
+    h2 { color: #003c8f; }
+    input, select { display: block; margin: 6px 0; padding: 6px; width: 100%; box-sizing: border-box; }
+    label { display: block; margin-top: 8px; }
+    button { margin-top: 8px; padding: 8px 16px; cursor: pointer; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #ccc; padding: 6px; text-align: left; }
+  </style>
+</head>
+<body>
+  <div id="app">
+
+    <!-- Exercício 1: Hello World com botão para mudar mensagem (mesmo código a ser colado no jsFiddle) -->
+    <section>
+      <h2>Exercício 1 — Hello Vue.js</h2>
+      <p>{{ mensagem }}</p>
+      <button @click="mudarMensagem">Clique aqui</button>
+    </section>
+
+    <!-- Exercício 2: Contador interativo -->
+    <section>
+      <h2>Exercício 2 — Contador</h2>
+      <p>Contador: {{ contador }}</p>
+      <button @click="incrementar">+</button>
+      <button @click="decrementar">-</button>
+    </section>
+
+    <!-- Exercício 3: Lista de tarefas com v-for, adicionar e remover -->
+    <section>
+      <h2>Exercício 3 — Lista de Tarefas</h2>
+      <ul>
+        <li v-for="(tarefa, index) in tarefas" :key="index">
+          {{ tarefa }}
+          <button @click="removerTarefa(index)">Remover</button>
+        </li>
+      </ul>
+      <input v-model="novaTarefa" placeholder="Nova tarefa">
+      <button @click="adicionarTarefa">Adicionar</button>
+    </section>
+
+    <!-- Exercício 4: Atualização reativa de índice de array -->
+    <section>
+      <h2>Exercício 4 — Atualizando array por índice</h2>
+      <ul>
+        <li v-for="(produto, index) in produtosEx4" :key="index">
+          {{ produto.nome }} - R$ {{ produto.preco }}
+        </li>
+      </ul>
+      <button @click="atualizarPrecoEx4(0, 15.99)">Atualizar preço do 1º produto</button>
+      <p style="font-size: 0.85em; color: #555;">
+        Obs: no Vue 3 não existe mais <code>Vue.set</code> — a reatividade via Proxy já detecta
+        essa mudança de índice automaticamente, então <code>this.produtosEx4[index].preco = novoPreco</code> já funciona.
+      </p>
+    </section>
+
+    <!-- Exercício 5: Formulário dinâmico completo -->
+    <section>
+      <h2>Exercício 5 — Formulário Dinâmico</h2>
+      <label>Nome:</label>
+      <input v-model="form.nome" type="text">
+
+      <label>Gênero:</label>
+      <label><input type="radio" value="Masculino" v-model="form.genero"> Masculino</label>
+      <label><input type="radio" value="Feminino" v-model="form.genero"> Feminino</label>
+
+      <label>Interesses:</label>
+      <label><input type="checkbox" value="Esportes" v-model="form.interesses"> Esportes</label>
+      <label><input type="checkbox" value="Música" v-model="form.interesses"> Música</label>
+      <label><input type="checkbox" value="Tecnologia" v-model="form.interesses"> Tecnologia</label>
+
+      <label>Cidade:</label>
+      <select v-model="form.cidade">
+        <option disabled value="">Escolha uma cidade</option>
+        <option>São Paulo</option>
+        <option>Rio de Janeiro</option>
+        <option>Belo Horizonte</option>
+      </select>
+
+      <p>Dados: {{ form.nome }}, {{ form.genero }}, {{ form.interesses }}, {{ form.cidade }}</p>
+    </section>
+
+    <!-- Exercício 6: .prevent + alert -->
+    <section>
+      <h2>Exercício 6 — Formulário com .prevent</h2>
+      <form @submit.prevent="enviarFormularioEx6">
+        <input v-model="nomeEx6" placeholder="Digite seu nome">
+        <button type="submit">Enviar</button>
+      </form>
+    </section>
+
+    <!-- Exercício 7: Modificadores de tecla Enter/Esc -->
+    <section>
+      <h2>Exercício 7 — Enter para salvar, Esc para limpar</h2>
+      <input v-model="textoEx7" @keyup.enter="salvarEx7" @keyup.esc="limparEx7" placeholder="Digite e pressione Enter ou Esc">
+      <p>Texto salvo: {{ textoSalvoEx7 }}</p>
+    </section>
+
+    <!-- Exercício 8: Lista de produtos com edição de preço -->
+    <section>
+      <h2>Exercício 8 — Lista de Produtos</h2>
+      <table>
+        <thead>
+          <tr><th>Nome</th><th>Preço</th><th>Quantidade</th><th></th></tr>
+        </thead>
+        <tbody>
+          <tr v-for="(produto, index) in produtosEx8" :key="index">
+            <td>{{ produto.nome }}</td>
+            <td>R$ {{ produto.preco.toFixed(2) }}</td>
+            <td>{{ produto.quantidade }}</td>
+            <td><button @click="editarPrecoEx8(index)">Editar preço (+R$1)</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Exercício 9: Ciclo de vida -->
+    <section>
+      <h2>Exercício 9 — Ciclo de Vida</h2>
+      <p>Abra o console (F12) para ver os logs de created() e mounted().</p>
+      <p>Status da requisição fictícia: {{ statusRequisicaoEx9 }}</p>
+    </section>
+
+    <!-- Exercício 10: Carrinho de compras -->
+    <section>
+      <h2>Exercício 10 — Carrinho de Compras</h2>
+      <input v-model="novoItemCarrinho" placeholder="Nome do item">
+      <button @click="adicionarAoCarrinho">Adicionar ao carrinho</button>
+      <table>
+        <thead>
+          <tr><th>Item</th><th></th></tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in carrinho" :key="item.id">
+            <td>{{ item.nome }}</td>
+            <td><button @click="removerDoCarrinho(item.id)">Remover</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+  </div>
+
+  <script>
+    const { createApp } = Vue;
+
+    createApp({
+      data() {
+        return {
+          // Exercício 1
+          mensagem: 'Olá, Vue.js!',
+
+          // Exercício 2
+          contador: 0,
+
+          // Exercício 3
+          tarefas: ['Estudar Vue.js', 'Praticar exercícios'],
+          novaTarefa: '',
+
+          // Exercício 4
+          produtosEx4: [
+            { nome: 'Produto A', preco: 10.0 },
+            { nome: 'Produto B', preco: 20.0 }
+          ],
+
+          // Exercício 5
+          form: { nome: '', genero: '', interesses: [], cidade: '' },
+
+          // Exercício 6
+          nomeEx6: '',
+
+          // Exercício 7
+          textoEx7: '',
+          textoSalvoEx7: '',
+
+          // Exercício 8
+          produtosEx8: [
+            { nome: 'Teclado', preco: 89.9, quantidade: 10 },
+            { nome: 'Mouse', preco: 39.9, quantidade: 25 }
+          ],
+
+          // Exercício 9
+          statusRequisicaoEx9: 'aguardando...',
+
+          // Exercício 10
+          carrinho: [],
+          novoItemCarrinho: '',
+          proximoIdCarrinho: 1
+        };
+      },
+      methods: {
+        // Exercício 1
+        mudarMensagem() {
+          this.mensagem = 'Você clicou no botão!';
+        },
+
+        // Exercício 2
+        incrementar() { this.contador++; },
+        decrementar() { this.contador--; },
+
+        // Exercício 3
+        adicionarTarefa() {
+          if (this.novaTarefa.trim() !== '') {
+            this.tarefas.push(this.novaTarefa);
+            this.novaTarefa = '';
+          }
+        },
+        removerTarefa(index) {
+          this.tarefas.splice(index, 1);
+        },
+
+        // Exercício 4
+        atualizarPrecoEx4(index, novoPreco) {
+          this.produtosEx4[index].preco = novoPreco;
+        },
+
+        // Exercício 6
+        enviarFormularioEx6() {
+          alert(`Formulário enviado! Nome: ${this.nomeEx6}`);
+        },
+
+        // Exercício 7
+        salvarEx7() {
+          this.textoSalvoEx7 = this.textoEx7;
+        },
+        limparEx7() {
+          this.textoEx7 = '';
+        },
+
+        // Exercício 8
+        editarPrecoEx8(index) {
+          this.produtosEx8[index].preco += 1;
+        },
+
+        // Exercício 10
+        adicionarAoCarrinho() {
+          if (this.novoItemCarrinho.trim() !== '') {
+            this.carrinho.push({ id: this.proximoIdCarrinho++, nome: this.novoItemCarrinho });
+            this.novoItemCarrinho = '';
+          }
+        },
+        removerDoCarrinho(id) {
+          this.carrinho = this.carrinho.filter(item => item.id !== id);
+        }
+      },
+      // Exercício 9: hooks de ciclo de vida
+      created() {
+        console.log('created: componente criado, dados prontos.');
+      },
+      mounted() {
+        console.log('mounted: componente montado no DOM.');
+        // Simulação de requisição fictícia
+        setTimeout(() => {
+          this.statusRequisicaoEx9 = 'dados carregados (simulado)';
+          console.log('Requisição fictícia concluída.');
+        }, 1000);
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>
