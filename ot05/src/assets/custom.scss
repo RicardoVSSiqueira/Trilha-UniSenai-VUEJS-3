@@ -1,0 +1,11 @@
+// Exercício 8: sobrescreve a variável de cor primária do Bootstrap
+$primary: #ff5733;
+
+// Depois de definir a variável, importamos o Bootstrap para que ele use essa cor
+@import "bootstrap/scss/bootstrap";
+
+// Ajuste extra na aparência dos Cards, pedido no exercício 8
+.card {
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
