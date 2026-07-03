@@ -29,7 +29,7 @@ import FormularioComponente from '../components/FormularioComponente.vue';
 import TabsComponente from '../components/TabsComponente.vue';
 
 export default {
-  name: 'Home',
+  name: 'HomePage',
   components: {
     GridExemplo,
     BotaoDinamico,
